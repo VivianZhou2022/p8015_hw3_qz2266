@@ -86,3 +86,54 @@ We couldn't see a clear tendency over days. However, we could roughly find that 
 More specifically, the total activity sum of Sunday is `r sum(total_act[, 'Sunday'])`, of Saturday is `r sum(total_act[, 'Saturday'])`, of Monday is `r sum(total_act[, 'Monday'])`, of Tuesday is `r sum(total_act[, 'Tuesday'])`, of Wednesday is `r sum(total_act[, 'Wednesday'])`, of Thursday is `r sum(total_act[, 'Thursday'])`, and of Friday is `r sum(total_act[, 'Friday'])`.
 
 The user is relatively more active at the beginning of the study than later on. On Saturdays of week 4 and 5, the data were much lower than the rest. There might be some problem with the measurement, such as incorrect use of the device. 
+
+## Make a single-panel plot to show the 24-hour activity time courses for each day.
+
+### If use time points as the x-axis:
+```{r accel_mean_plot}
+accel_mean_plot = 
+  accel %>%
+  separate(act_minute, into = c("activity", "act_min")) %>%
+  select(-activity) %>%
+  mutate(
+    act_min = as.numeric(act_min)) %>%
+  group_by(day, act_min) %>% 
+  dplyr::summarise(avg_count = mean(act_count))
+
+accel_mean_plot %>%
+  ggplot(aes(x = act_min, y = avg_count, color = day)) + 
+  geom_point() +
+  geom_line(alpha = 0.5) +
+  labs(
+    title = "24-hour Activity Count by Day",
+    x = "Time Course",
+    y = "Activity Count"
+  ) + 
+  scale_x_continuous(
+    breaks = c(0, 360, 720, 1080, 1440), 
+    labels = c("12AM", "6AM", "12PM", "6PM", "11:59PM"),
+    limits = c(0, 1440)
+    )
+```
+
+### If use Minute as the x-axis:
+```{r accel_mean_plot2}
+accel_mean_plot2 = 
+  accel %>%
+  separate(act_minute, into = c("activity", "act_min")) %>%
+  select(-activity) %>%
+  mutate(
+    act_min = as.numeric(act_min)) %>%
+  group_by(day, act_min) %>% 
+  dplyr::summarise(avg_count = mean(act_count))
+
+accel_mean_plot2 %>%
+  ggplot(aes(x = act_min, y = avg_count, color = day)) + 
+  geom_point() +
+  geom_line(alpha = 0.5) +
+  labs(
+    title = "24-hour Activity Count by Day",
+    x = "Minute",
+    y = "Activity Count"
+    )
+```
