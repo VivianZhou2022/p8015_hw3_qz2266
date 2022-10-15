@@ -41,8 +41,18 @@ accel =
   
   mutate(
     week = as.integer(week),
-    day_id = as.numeric(day_id),
+    day_id = as.integer(day_id),
     day = factor(day, levels = c("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday")),
     day_type = factor(day_type, levels = c("weekday", "weekend"))) %>% 
   relocate(week,day_id, day, day_type)
 ```
+
+
+The data set has `r nrow(accel)` observations, and contains `r ncol(accel)` variables, including `r colnames(accel)`. Data was collected across `r accel %>% summarise(count = n_distinct(day_id))` days of `r accel %>% summarise(count = n_distinct(week))` weeks.
+
+There are four date variables :  
+
+* day_id is a `r class(pull(accel,day_id))` variable that indicates the day when data was collected;
+* day is a `r class(pull(accel,day))` variable  that indicates which day it is when data was collected;
+* week is a `r class(pull(accel, week))` variable that indicates the week when data was collected.
+* day_type is a `r class(pull(accel, day_type))` variable that indicates the information was collected on weekend or weekday.
