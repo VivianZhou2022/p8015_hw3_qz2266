@@ -5,7 +5,11 @@ date: "2022-10-15"
 output: github_document
 ---
 
-```{r setup, include=FALSE}
+
+```{r, message = FALSE}
+library(tidyverse)
+library(lubridate)
+library(p8105.datasets)
+library(readxl)
 knitr::opts_chunk$set(echo = TRUE)
 ```
-
