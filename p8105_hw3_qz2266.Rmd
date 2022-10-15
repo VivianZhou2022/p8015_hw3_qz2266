@@ -79,9 +79,7 @@ total_act =
     values_from = "total_activity")
 
 ```
-```{r}
-view(total_act)
-```
+
 
 We couldn't see a clear tendency over days. However, we could roughly find that the total activity across 5 weeks is high on Wednesday, Thursday and Friday, and low in Saturday. The total activity seemed to peak on Friday but quickly drop to the bottom on Saturday.  
 
