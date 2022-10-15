@@ -13,3 +13,36 @@ library(p8105.datasets)
 library(readxl)
 knitr::opts_chunk$set(echo = TRUE)
 ```
+
+# Problem 2
+
+## Load, tidy, and wrangle the data. 
+
+```{r}
+accel = 
+  read_csv("data/accel_data.csv") %>%
+  janitor::clean_names() %>%
+  pivot_longer(
+    activity_1:activity_1440,
+    names_to = "act_minute",
+    values_to = "act_count") %>%
+ 
+  mutate(
+    day_type = case_when(
+      day == "Monday" ~ "weekday",
+      day == "Tuesday" ~ "weekday",
+      day == "Wednesday" ~ "weekday",
+      day == "Thursday" ~ "weekday",
+      day == "Friday" ~ "weekday",
+      day == "Saturday" ~ "weekend",
+      day == "Sunday" ~ "weekend" ,
+      TRUE     ~ ""
+  )) %>%
+  
+  mutate(
+    week = as.integer(week),
+    day_id = as.numeric(day_id),
+    day = factor(day, levels = c("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday")),
+    day_type = factor(day_type, levels = c("weekday", "weekend"))) %>% 
+  relocate(week,day_id, day, day_type)
+```
