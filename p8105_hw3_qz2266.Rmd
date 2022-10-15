@@ -162,3 +162,10 @@ accel_plot %>%
 ```
 
 From the plot we could see the activity count at most time points are below 2500.There are three peaks located around 7-8AM, 12PM and 8-9pm. Especially on Friday, there is an obvious peak around 8-9pm. Moreover, at nights from 12AM to 5AM, the activity counts are pretty low. It might be because this time slot is the sleeping hour.
+
+# Problem 3
+
+```{r}
+library(p8105.datasets)
+data("ny_noaa")
+```
