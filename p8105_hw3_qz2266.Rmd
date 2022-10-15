@@ -56,3 +56,35 @@ There are four date variables :
 * day is a `r class(pull(accel,day))` variable  that indicates which day it is when data was collected;
 * week is a `r class(pull(accel, week))` variable that indicates the week when data was collected.
 * day_type is a `r class(pull(accel, day_type))` variable that indicates the information was collected on weekend or weekday.
+
+There are two activity variables :
+
+* act_minute is a `r class(pull(accel, act_minute))` variable that indicates the minute when the activity count was collected, corresponding to each minute of a 24-hour day starting at midnight.
+* On each day, there are `r accel %>% filter(day_id == 1) %>% summarise(count = n_distinct(act_minute))` activity counts for each minute of a 24-hour day starting at midnight, and the corresponding value is stored in act_count, which is a `r class(pull(accel, act_count))` variable.
+
+## The total activity over the day
+
+
+```{r}
+library(dplyr, warn.conflicts = FALSE)
+
+options(dplyr.summarise.inform = FALSE)
+
+total_act =
+  accel %>%
+  group_by(week, day) %>%
+  dplyr::summarise(total_activity = sum(act_count)) %>% 
+  pivot_wider(
+    names_from = "day", 
+    values_from = "total_activity")
+
+```
+```{r}
+view(total_act)
+```
+
+We couldn't see a clear tendency over days. However, we could roughly find that the total activity across 5 weeks is high on Wednesday, Thursday and Friday, and low in Saturday. The total activity seemed to peak on Friday but quickly drop to the bottom on Saturday.  
+
+More specifically, the total activity sum of Sunday is `r sum(total_act[, 'Sunday'])`, of Saturday is `r sum(total_act[, 'Saturday'])`, of Monday is `r sum(total_act[, 'Monday'])`, of Tuesday is `r sum(total_act[, 'Tuesday'])`, of Wednesday is `r sum(total_act[, 'Wednesday'])`, of Thursday is `r sum(total_act[, 'Thursday'])`, and of Friday is `r sum(total_act[, 'Friday'])`.
+
+The user is relatively more active at the beginning of the study than later on. On Saturdays of week 4 and 5, the data were much lower than the rest. There might be some problem with the measurement, such as incorrect use of the device. 
