@@ -9,7 +9,6 @@ output: github_document
 ```{r, message = FALSE}
 library(tidyverse)
 library(lubridate)
-library(p8105.datasets)
 library(readxl)
 knitr::opts_chunk$set(echo = TRUE)
 ```
@@ -165,7 +164,12 @@ From the plot we could see the activity count at most time points are below 2500
 
 # Problem 3
 
-```{r}
+```{r load data}
 library(p8105.datasets)
 data("ny_noaa")
+```
+
+```{r}
+  ny_noaa %>%
+  summary() 
 ```
