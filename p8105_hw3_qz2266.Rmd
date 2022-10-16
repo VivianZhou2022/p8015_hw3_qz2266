@@ -64,7 +64,7 @@ There are two activity variables :
 ## The total activity over the day
 
 
-```{r}
+```{r   total activity}
 library(dplyr, warn.conflicts = FALSE)
 
 options(dplyr.summarise.inform = FALSE)
@@ -89,7 +89,7 @@ The user is relatively more active at the beginning of the study than later on. 
 ## Make a single-panel plot to show the 24-hour activity time courses for each day.
 
 ### If use time points as the x-axis:
-```{r accel_mean_plot}
+```{r   accel_mean_plot}
 accel_mean_plot = 
   accel %>%
   separate(act_minute, into = c("activity", "act_min")) %>%
@@ -116,7 +116,7 @@ accel_mean_plot %>%
 ```
 
 ### If use Minute as the x-axis:
-```{r accel_mean_plot2}
+```{r   accel_mean_plot2}
 accel_mean_plot2 = 
   accel %>%
   separate(act_minute, into = c("activity", "act_min")) %>%
@@ -139,7 +139,7 @@ accel_mean_plot2 %>%
 
 # Another solution:
 
-```{r accel_plot}
+```{r   accel_plot}
 accel_plot = 
   accel %>%
   separate(act_minute, into = c("activity", "act_min")) %>%
@@ -164,12 +164,51 @@ From the plot we could see the activity count at most time points are below 2500
 
 # Problem 3
 
-```{r load data}
+## Load data
+```{r  load data}
 library(p8105.datasets)
 data("ny_noaa")
 ```
 
-```{r}
-  ny_noaa %>%
+## Initial summary
+```{r  summary}
+ny_noaa %>%
+  group_by(id) %>%
+  summarize(n_obs = n()) 
+
+ny_noaa %>%
   summary() 
 ```
+
+## Missing data
+```{r  results = 'hide'}
+# number of rows with missing data
+ny_noaa %>% drop_na() %>% nrow()
+
+# number of columns with missing data
+sum(is.na(ny_noaa$id))
+sum(is.na(ny_noaa$date))
+sum(is.na(ny_noaa$prcp))
+sum(is.na(ny_noaa$snow))
+sum(is.na(ny_noaa$snwd))
+sum(is.na(ny_noaa$tmax))
+sum(is.na(ny_noaa$tmin))
+```
+
+The ny_noaa data set has `r nrow(ny_noaa)` observations, and  `r ncol(ny_noaa)` variables, including `r colnames(ny_noaa)`:
+
+id: Weather station ID
+date: Date of observation
+prcp: Precipitation (tenths of mm)
+snow: Snowfall (mm)
+snwd: Snow depth (mm)
+tmax: Maximum temperature (tenths of degrees C)
+tmin: Minimum temperature (tenths of degrees C)
+
+Data was collected from 1484 weather stations, ranging from 1981-01-01 to 2010-12-31.
+
+There are `r ny_noaa %>% drop_na() %>% nrow()` rows with missing data. Among them, `r sum(is.na(ny_noaa$prcp))/nrow(ny_noaa)*100` % missing data for precipitation variable,  
+`r sum(is.na(ny_noaa$snow))/nrow(ny_noaa)*100` % for snowfall,  `r sum(is.na(ny_noaa$snwd))/nrow(ny_noaa)*100` % for snow depth, `r sum(is.na(ny_noaa$tmax))/nrow(ny_noaa)*100` % for maximum temperature, and  `r sum(is.na(ny_noaa$tmin))/nrow(ny_noaa)*100` % for minimum temperature.
+Therefore, the missing data is an issue, especially for tmax and tmin.
+
+
