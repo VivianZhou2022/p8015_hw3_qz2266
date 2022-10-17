@@ -183,7 +183,7 @@ snwd: Snow depth (mm)
 tmax: Maximum temperature (tenths of degrees C)
 tmin: Minimum temperature (tenths of degrees C)
 
-Data was collected from 1484 weather stations, ranging from 1981-01-01 to 2010-12-31.
+Data was collected from 747 weather stations, ranging from 1981-01-01 to 2010-12-31.
 
 There are `r ny_noaa %>% drop_na() %>% nrow()` rows with missing data. Among them, `r sum(is.na(ny_noaa$prcp))/nrow(ny_noaa)*100` % missing data for precipitation variable,  
 `r sum(is.na(ny_noaa$snow))/nrow(ny_noaa)*100` % for snowfall,  `r sum(is.na(ny_noaa$snwd))/nrow(ny_noaa)*100` % for snow depth, `r sum(is.na(ny_noaa$tmax))/nrow(ny_noaa)*100` % for maximum temperature, and  `r sum(is.na(ny_noaa$tmin))/nrow(ny_noaa)*100` % for minimum temperature.
@@ -308,3 +308,9 @@ snowfall_p
 library(patchwork)
 tmax_tmin_p / snowfall_p
 ```
+
+From the above NY Max and Min Temperatures plot we can see from 1981-2010, the temperature differences in NY were not big. Basically, when the max temperature goes up, the min temperature goes up as well and verse visa. The line represents the relationship between the max temperature and the min temperature. It is roughly linear and most days fluctuates around this line. 
+
+There were very few days the temperature went to extreme, since the most days the max temperatures were below 40 and the min temperatures were above -30 degree celsius.The most frequently appeared maximum temperature is ~25°C and the most frequently appeared minimum temperature is ~15°C.
+
+From the below NY Snowfall Distribution plot we can see the distribution of snowfall values that are greater than 0 and less than 100 separately by year, from 1981-2010. The snowfall remains quite even across the entire period, with a right-skewed distribution or long tail towards upper snowfall amounts. The median snowfall is around 25 mm and stays consistent year to year, give or take a few mm. The upper and lower quartiles are also quite consistent, with the 25th percentile around 15 mm and 75th percentile around 50 mm. There are more outliers showing up in the year of 1998, 2006 and 2010.
