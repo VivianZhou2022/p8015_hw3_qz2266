@@ -224,8 +224,6 @@ The most commonly observed values for snowfall are 0, NA and 25.
 
 ## Make a two-panel plot showing the average max temperature in January and in July in each station across years. Is there any observable / interpretable structure? Any outliers? 
 
-
-# mine:
 ```{r ny_noaa_plot1}
 jan_july = 
   ny_noaa %>%
@@ -264,3 +262,22 @@ jan_july %>% ggplot(aes(x = year, y = mean_tmax, color = month)) +
 
 **Comments**: Between 1981 and 2010, the average maximum temperature in January is lower than the one in July (about 0 vs. 25 degree celsius), which is consistent with the change of season in NY. Moreover, generally speaking, the average maximum temperature in January of each year seems vary more than the one in July, across all the weather stations, but the overall trend is quite similar to each other. As for the outliers, most of them were located in both positive and negative direction in January, while those in July appeared mostly in the negative direction. 
 
+## Make a two-panel plot showing (i) tmax vs tmin for the full dataset (note that a scatterplot may not be the best option); and (ii) make a plot showing the distribution of snowfall values greater than 0 and less than 100 separately by year
+
+```{r}
+tmax_tmin_p = 
+  ny_noaa %>% 
+  filter(tmax != "NA" & tmin != "NA") %>% 
+  ggplot(aes(x = tmax, y = tmin)) + 
+  geom_hex(bin = 20) +
+  geom_smooth(se = F) +
+  scale_fill_viridis_c()
+  labs(
+    title = "NY Max and Min Temperatures (1981-2010)",
+    x = "Max Temp (°C)",
+    y = "Min Temp (°C)"
+  )
+  theme(legend.position = "right")
+  
+tmax_tmin_p
+```
