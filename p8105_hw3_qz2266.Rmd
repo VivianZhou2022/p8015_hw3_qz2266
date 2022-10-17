@@ -10,13 +10,20 @@ output: github_document
 library(tidyverse)
 library(lubridate)
 library(readxl)
-knitr::opts_chunk$set(echo = TRUE)
+
+knitr::opts_chunk$set(
+	echo = TRUE,
+	warning = FALSE,
+	fig.width = 8, 
+  fig.height = 6,
+  out.width = "90%"
+)
 ```
 
 
-# Problem 2
+### Problem 2
 
-## Load, tidy, and otherwise wrangle the data. Your final dataset should include all originally observed variables and values; have useful variable names; include a weekday vs weekend variable; and encode data with reasonable variable classes. Describe the resulting dataset. 
+#### Load, tidy, and otherwise wrangle the data. Your final dataset should include all originally observed variables and values; have useful variable names; include a weekday vs weekend variable; and encode data with reasonable variable classes. Describe the resulting dataset. 
 
 ```{r}
 accel = 
@@ -62,7 +69,7 @@ There are two activity variables :
 * On each day, there are `r accel %>% filter(day_id == 1) %>% summarise(count = n_distinct(act_minute))` activity counts for each minute of a 24-hour day starting at midnight, and the corresponding value is stored in act_count, which is a `r class(pull(accel, act_count))` variable.
 
 
-## Using your tidied dataset, aggregate across minutes to create a total activity variable for each day, and create a table showing these totals.
+#### Using your tidied dataset, aggregate across minutes to create a total activity variable for each day, and create a table showing these totals.
 
 ```{r   total activity}
 library(dplyr, warn.conflicts = FALSE)
@@ -86,7 +93,7 @@ More specifically, the total activity sum of Sunday is `r sum(total_act[, 'Sunda
 The user is relatively more active at the beginning of the study than later on. On Saturdays of week 4 and 5, the data were much lower than the rest. There might be some problem with the measurement, such as incorrect use of the device. 
 
 
-## Make a single-panel plot to show the 24-hour activity time courses for each day.
+#### Make a single-panel plot to show the 24-hour activity time courses for each day.
 
 ```{r   accel_plot}
 accel_plot = 
@@ -109,7 +116,7 @@ accel_plot %>%
   )
 ```
 
-### To make it easier to intepret the data, we use the average activity at each minute of the same day of 5 weeks as the y-axis and time points in a 24-hour pattern as the x-axis:
+#### To make it easier to intepret the data, we use the average activity at each minute of the same day of 5 weeks as the y-axis and time points in a 24-hour pattern as the x-axis:
 
 ```{r   accel_mean_plot}
 accel_mean_plot = 
@@ -141,9 +148,9 @@ From the plot we could see the average activity count at most time points are be
 
 
 
-# Problem 3
+### Problem 3
 
-## Write a description of the dataset, noting the size and structure of the data, describing some key variables, and indicating the extent to which missing data is an issue.
+#### Write a description of the dataset, noting the size and structure of the data, describing some key variables, and indicating the extent to which missing data is an issue.
 
 ```{r  load data}
 library(p8105.datasets)
@@ -190,7 +197,7 @@ There are `r ny_noaa %>% drop_na() %>% nrow()` rows with missing data. Among the
 Therefore, the missing data is an issue, especially for tmax and tmin.
 
 
-## Do some data cleaning. Create separate variables for year, month, and day. Ensure observations for temperature, precipitation, and snowfall are given in reasonable units. For snowfall, what are the most commonly observed values?
+#### Do some data cleaning. Create separate variables for year, month, and day. Ensure observations for temperature, precipitation, and snowfall are given in reasonable units. For snowfall, what are the most commonly observed values?
 
 ```{r}
 ny_noaa =
@@ -221,7 +228,7 @@ ny_noaa %>%
 
 The most commonly observed values for snowfall are 0, NA and 25.
 
-## Make a two-panel plot showing the average max temperature in January and in July in each station across years. Is there any observable / interpretable structure? Any outliers? 
+#### Make a two-panel plot showing the average max temperature in January and in July in each station across years. Is there any observable / interpretable structure? Any outliers? 
 
 ```{r ny_noaa_plot1}
 jan_july = 
@@ -262,7 +269,7 @@ jan_july %>% ggplot(aes(x = year, y = mean_tmax, color = month)) +
 **Comments**: Between 1981 and 2010, the average maximum temperature in January is lower than the one in July (about 0 vs. 25 degree celsius), which is consistent with the change of seasons in NY. Moreover, generally speaking, the average maximum temperature in January of each year seems vary stronger than the one in July, across all the weather stations, but their overall trends are quite similar to each other. As for the outliers, most of them were located in both positive and negative direction in January, while those in July appeared mostly in the negative direction. 
 
 
-## Make a two-panel plot showing (i) tmax vs tmin for the full dataset (note that a scatterplot may not be the best option); and (ii) make a plot showing the distribution of snowfall values greater than 0 and less than 100 separately by year
+#### Make a two-panel plot showing (i) tmax vs tmin for the full dataset (note that a scatterplot may not be the best option); and (ii) make a plot showing the distribution of snowfall values greater than 0 and less than 100 separately by year
 
 ```{r tmax_tmin}
 tmax_tmin_p = 
@@ -314,3 +321,78 @@ From the above NY Max and Min Temperatures plot we can see from 1981-2010, the t
 There were very few days the temperature went to extreme, since the most days the max temperatures were below 40 and the min temperatures were above -30 degree celsius.The most frequently appeared maximum temperature is ~25°C and the most frequently appeared minimum temperature is ~15°C.
 
 From the below NY Snowfall Distribution plot we can see the distribution of snowfall values that are greater than 0 and less than 100 separately by year, from 1981-2010. The snowfall remains quite even across the entire period, with a right-skewed distribution or long tail towards upper snowfall amounts. The median snowfall is around 25 mm and stays consistent year to year, give or take a few mm. The upper and lower quartiles are also quite consistent, with the 25th percentile around 15 mm and 75th percentile around 50 mm. There are more outliers showing up in the year of 1998, 2006 and 2010.
+
+### Problem 1
+
+#### Read in the data
+```{r}
+library(ggridges)
+
+options(
+  ggplot2.continuous.colour = "viridis",
+  ggplot2.continuous.fill = "viridis"
+)
+
+scale_colour_discrete = scale_colour_viridis_d
+scale_fill_discrete = scale_fill_viridis_d
+```
+
+```{r}
+data("instacart")
+
+instacart = 
+  instacart %>% 
+  as_tibble(instacart)
+```
+
+#### Answer questions about the data
+
+This dataset contains `r nrow(instacart)` rows and `r ncol(instacart)` columns, with each row resprenting a single product from an instacart order. Variables include identifiers for user, order, and product; the order in which each product was added to the cart. There are several order-level variables, describing the day and time of the order, and number of days since prior order. Then there are several item-specific variables, describing the product name (e.g. Yogurt, Avocado), department (e.g. dairy and eggs, produce), and aisle (e.g. yogurt, fresh fruits), and whether the item has been ordered by this user in the past. In total, there are `r instacart %>% select(product_id) %>% distinct %>% count` products found in `r instacart %>% select(user_id, order_id) %>% distinct %>% count` orders from `r instacart %>% select(user_id) %>% distinct %>% count` distinct users.
+
+Below is a table summarizing the number of items ordered from aisle. In total, there are 134 aisles, with fresh vegetables and fresh fruits holding the most items ordered by far.
+
+```{r}
+instacart %>% 
+  count(aisle) %>% 
+  arrange(desc(n))
+```
+
+Next is a plot that shows the number of items ordered in each aisle. Here, aisles are ordered by ascending number of items.
+
+```{r}
+instacart %>% 
+  count(aisle) %>% 
+  filter(n > 10000) %>% 
+  mutate(aisle = fct_reorder(aisle, n)) %>% 
+  ggplot(aes(x = aisle, y = n)) + 
+  geom_point() + 
+  labs(title = "Number of items ordered in each aisle") +
+  theme(axis.text.x = element_text(angle = 60, hjust = 1))
+
+```
+
+Our next table shows the three most popular items in aisles `baking ingredients`, `dog food care`, and `packaged vegetables fruits`, and includes the number of times each item is ordered in your table.
+
+```{r}
+instacart %>% 
+  filter(aisle %in% c("baking ingredients", "dog food care", "packaged vegetables fruits")) %>%
+  group_by(aisle) %>% 
+  count(product_name) %>% 
+  mutate(rank = min_rank(desc(n))) %>% 
+  filter(rank < 4) %>% 
+  arrange(desc(n)) %>%
+  knitr::kable()
+```
+
+Finally is a table showing the mean hour of the day at which Pink Lady Apples and Coffee Ice Cream are ordered on each day of the week. This table has been formatted in an untidy manner for human readers. Pink Lady Apples are generally purchased slightly earlier in the day than Coffee Ice Cream, with the exception of day 5.
+
+```{r}
+instacart %>%
+  filter(product_name %in% c("Pink Lady Apples", "Coffee Ice Cream")) %>%
+  group_by(product_name, order_dow) %>%
+  summarize(mean_hour = mean(order_hour_of_day)) %>%
+  spread(key = order_dow, value = mean_hour) %>%
+  knitr::kable(digits = 2)
+```
+
+
