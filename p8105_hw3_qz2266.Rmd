@@ -88,7 +88,29 @@ The user is relatively more active at the beginning of the study than later on. 
 
 ## Make a single-panel plot to show the 24-hour activity time courses for each day.
 
-### If use time points as the x-axis:
+```{r   accel_plot}
+accel_plot = 
+  accel %>%
+  separate(act_minute, into = c("activity", "act_min")) %>%
+  select(-activity) %>%
+  mutate(
+    act_min = as.numeric(act_min))
+
+accel_plot %>%
+  group_by(day_id) %>%
+  ggplot(aes(x = act_min, y = act_count, color = day)) +
+  geom_point() +
+  geom_line() +
+  
+  labs(
+    title = "24-hour Activity Count by Day",
+    x = "Minute",
+    y = "Activity Count"
+  )
+```
+
+### To make it easier to intepret the data, we use the average activity at each minute of the same day of 5 weeks as the y-axis and time points in a 24-hour pattern as the x-axis:
+
 ```{r   accel_mean_plot}
 accel_mean_plot = 
   accel %>%
@@ -115,30 +137,7 @@ accel_mean_plot %>%
     )
 ```
 
-# Another solution:
-
-```{r   accel_plot}
-accel_plot = 
-  accel %>%
-  separate(act_minute, into = c("activity", "act_min")) %>%
-  select(-activity) %>%
-  mutate(
-    act_min = as.numeric(act_min))
-
-accel_plot %>%
-  group_by(day_id) %>%
-  ggplot(aes(x = act_min, y = act_count, color = day)) +
-  geom_point() +
-  geom_line() +
-  
-  labs(
-    title = "24-hour Activity Count by Day",
-    x = "Minute",
-    y = "Activity Count"
-  )
-```
-
-From the plot we could see the activity count at most time points are below 2500.There are three peaks located around 7-8AM, 12PM and 8-9pm. Especially on Friday, there is an obvious peak around 8-9pm. Moreover, at nights from 12AM to 5AM, the activity counts are pretty low. It might be because this time slot is the sleeping hour.
+From the plot we could see the average activity count at most time points are below 2500.There are three peaks located around 7-8AM, 12PM and 8-9pm. Especially on Friday, there is an obvious peak around 8-9pm. Moreover, at nights from 12AM to 5AM, the activity counts are pretty low. It might be because this time slot is the sleeping hour.
 
 
 
@@ -213,7 +212,7 @@ ncol(ny_noaa)
 colnames(ny_noaa)
 ```
 
-```{r snowfall}
+```{r snow_value}
 ny_noaa %>%
   count(snow) %>%
   arrange(desc(n)) %>%
@@ -260,11 +259,12 @@ jan_july %>% ggplot(aes(x = year, y = mean_tmax, color = month)) +
   facet_grid(~month) 
 ```
 
-**Comments**: Between 1981 and 2010, the average maximum temperature in January is lower than the one in July (about 0 vs. 25 degree celsius), which is consistent with the change of season in NY. Moreover, generally speaking, the average maximum temperature in January of each year seems vary more than the one in July, across all the weather stations, but the overall trend is quite similar to each other. As for the outliers, most of them were located in both positive and negative direction in January, while those in July appeared mostly in the negative direction. 
+**Comments**: Between 1981 and 2010, the average maximum temperature in January is lower than the one in July (about 0 vs. 25 degree celsius), which is consistent with the change of seasons in NY. Moreover, generally speaking, the average maximum temperature in January of each year seems vary stronger than the one in July, across all the weather stations, but their overall trends are quite similar to each other. As for the outliers, most of them were located in both positive and negative direction in January, while those in July appeared mostly in the negative direction. 
+
 
 ## Make a two-panel plot showing (i) tmax vs tmin for the full dataset (note that a scatterplot may not be the best option); and (ii) make a plot showing the distribution of snowfall values greater than 0 and less than 100 separately by year
 
-```{r}
+```{r tmax_tmin}
 tmax_tmin_p = 
   ny_noaa %>% 
   filter(tmax != "NA" & tmin != "NA") %>% 
@@ -282,9 +282,7 @@ tmax_tmin_p =
 tmax_tmin_p
 ```
 
-
-
-```{r}
+```{r snowfall}
 snowfall_p = 
   ny_noaa %>% 
   drop_na(snow) %>%
@@ -304,4 +302,9 @@ snowfall_p =
   theme(axis.text.x = element_text(angle = 90, size = 5))
 
 snowfall_p
+```
+
+```{r patchwork}
+library(patchwork)
+tmax_tmin_p / snowfall_p
 ```
