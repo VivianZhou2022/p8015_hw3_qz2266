@@ -13,9 +13,10 @@ library(readxl)
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+
 # Problem 2
 
-## Load, tidy, and wrangle the data. 
+## Load, tidy, and otherwise wrangle the data. Your final dataset should include all originally observed variables and values; have useful variable names; include a weekday vs weekend variable; and encode data with reasonable variable classes. Describe the resulting dataset. 
 
 ```{r}
 accel = 
@@ -46,7 +47,6 @@ accel =
   relocate(week,day_id, day, day_type)
 ```
 
-
 The data set has `r nrow(accel)` observations, and contains `r ncol(accel)` variables, including `r colnames(accel)`. Data was collected across `r accel %>% summarise(count = n_distinct(day_id))` days of `r accel %>% summarise(count = n_distinct(week))` weeks.
 
 There are four date variables :  
@@ -61,8 +61,8 @@ There are two activity variables :
 * act_minute is a `r class(pull(accel, act_minute))` variable that indicates the minute when the activity count was collected, corresponding to each minute of a 24-hour day starting at midnight.
 * On each day, there are `r accel %>% filter(day_id == 1) %>% summarise(count = n_distinct(act_minute))` activity counts for each minute of a 24-hour day starting at midnight, and the corresponding value is stored in act_count, which is a `r class(pull(accel, act_count))` variable.
 
-## The total activity over the day
 
+## Using your tidied dataset, aggregate across minutes to create a total activity variable for each day, and create a table showing these totals.
 
 ```{r   total activity}
 library(dplyr, warn.conflicts = FALSE)
@@ -79,12 +79,12 @@ total_act =
 
 ```
 
-
-We couldn't see a clear tendency over days. However, we could roughly find that the total activity across 5 weeks is high on Wednesday, Thursday and Friday, and low in Saturday. The total activity seemed to peak on Friday but quickly drop to the bottom on Saturday.  
+We couldn't see any apparent trends over days. However, we could roughly find that the total activity across 5 weeks is high on Wednesday, Thursday and Friday, and low in Saturday. The total activity seemed to peak on Friday but quickly drop to the bottom on Saturday.  
 
 More specifically, the total activity sum of Sunday is `r sum(total_act[, 'Sunday'])`, of Saturday is `r sum(total_act[, 'Saturday'])`, of Monday is `r sum(total_act[, 'Monday'])`, of Tuesday is `r sum(total_act[, 'Tuesday'])`, of Wednesday is `r sum(total_act[, 'Wednesday'])`, of Thursday is `r sum(total_act[, 'Thursday'])`, and of Friday is `r sum(total_act[, 'Friday'])`.
 
 The user is relatively more active at the beginning of the study than later on. On Saturdays of week 4 and 5, the data were much lower than the rest. There might be some problem with the measurement, such as incorrect use of the device. 
+
 
 ## Make a single-panel plot to show the 24-hour activity time courses for each day.
 
@@ -104,36 +104,14 @@ accel_mean_plot %>%
   geom_point() +
   geom_line(alpha = 0.5) +
   labs(
-    title = "24-hour Activity Count by Day",
+    title = "24-hour Average Activity Count by Day",
     x = "Time Course",
-    y = "Activity Count"
+    y = "Average Activity Count"
   ) + 
   scale_x_continuous(
     breaks = c(0, 360, 720, 1080, 1440), 
     labels = c("12AM", "6AM", "12PM", "6PM", "11:59PM"),
     limits = c(0, 1440)
-    )
-```
-
-### If use Minute as the x-axis:
-```{r   accel_mean_plot2}
-accel_mean_plot2 = 
-  accel %>%
-  separate(act_minute, into = c("activity", "act_min")) %>%
-  select(-activity) %>%
-  mutate(
-    act_min = as.numeric(act_min)) %>%
-  group_by(day, act_min) %>% 
-  dplyr::summarise(avg_count = mean(act_count))
-
-accel_mean_plot2 %>%
-  ggplot(aes(x = act_min, y = avg_count, color = day)) + 
-  geom_point() +
-  geom_line(alpha = 0.5) +
-  labs(
-    title = "24-hour Activity Count by Day",
-    x = "Minute",
-    y = "Activity Count"
     )
 ```
 
@@ -162,15 +140,17 @@ accel_plot %>%
 
 From the plot we could see the activity count at most time points are below 2500.There are three peaks located around 7-8AM, 12PM and 8-9pm. Especially on Friday, there is an obvious peak around 8-9pm. Moreover, at nights from 12AM to 5AM, the activity counts are pretty low. It might be because this time slot is the sleeping hour.
 
+
+
 # Problem 3
 
-## Load data
+## Write a description of the dataset, noting the size and structure of the data, describing some key variables, and indicating the extent to which missing data is an issue.
+
 ```{r  load data}
 library(p8105.datasets)
 data("ny_noaa")
 ```
 
-## Initial summary
 ```{r  summary}
 ny_noaa %>%
   group_by(id) %>%
@@ -180,8 +160,7 @@ ny_noaa %>%
   summary() 
 ```
 
-## Missing data
-```{r  results = 'hide'}
+```{r  missing data, results = 'hide'}
 # number of rows with missing data
 ny_noaa %>% drop_na() %>% nrow()
 
@@ -210,5 +189,38 @@ Data was collected from 1484 weather stations, ranging from 1981-01-01 to 2010-1
 There are `r ny_noaa %>% drop_na() %>% nrow()` rows with missing data. Among them, `r sum(is.na(ny_noaa$prcp))/nrow(ny_noaa)*100` % missing data for precipitation variable,  
 `r sum(is.na(ny_noaa$snow))/nrow(ny_noaa)*100` % for snowfall,  `r sum(is.na(ny_noaa$snwd))/nrow(ny_noaa)*100` % for snow depth, `r sum(is.na(ny_noaa$tmax))/nrow(ny_noaa)*100` % for maximum temperature, and  `r sum(is.na(ny_noaa$tmin))/nrow(ny_noaa)*100` % for minimum temperature.
 Therefore, the missing data is an issue, especially for tmax and tmin.
+
+
+## Do some data cleaning. Create separate variables for year, month, and day. Ensure observations for temperature, precipitation, and snowfall are given in reasonable units. For snowfall, what are the most commonly observed values?
+
+```{r}
+ny_noaa =
+ny_noaa %>% 
+  mutate(
+  year = lubridate::year(date),
+  month = lubridate::month(date),
+  day = lubridate::day(date),
+  prcp = prcp/10,
+  tmin = as.numeric(tmin)/10,
+  tmax = as.numeric(tmax)/10
+  ) %>% 
+  relocate(id, year, month, day) %>% 
+  select(-date)
+```
+
+```{r}
+ncol(ny_noaa)
+colnames(ny_noaa)
+```
+
+```{r snowfall}
+ny_noaa %>%
+  count(snow) %>%
+  arrange(desc(n)) %>%
+  top_n(3) 
+```
+
+The most commonly observed values for snowfall are 0, NA and 25.
+
 
 
