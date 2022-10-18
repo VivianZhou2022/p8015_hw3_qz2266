@@ -84,6 +84,8 @@ total_act =
     names_from = "day", 
     values_from = "total_activity")
 
+total_act
+
 ```
 
 We couldn't see any apparent trends over days. However, we could roughly find that the total activity across 5 weeks is high on Wednesday, Thursday and Friday, and low in Saturday. The total activity seemed to peak on Friday but quickly drop to the bottom on Saturday.  
@@ -311,16 +313,46 @@ snowfall_p =
 snowfall_p
 ```
 
+#### Another option: If we use geom_desity_ridges function, we can get more information about the snowfall distribution. 
+```{r}
+library(ggridges)
+
+snowfall_p2 = 
+  ny_noaa %>% 
+  drop_na(snow) %>%
+  filter(snow > 0 & snow < 100) %>% 
+  ggplot(aes(x = snow, y = factor(year), fill = stat(x))) +
+  geom_density_ridges_gradient(scale = 0.75, rel_min_height = 0.05)  + 
+  scale_fill_viridis_c(name = "Snowfall (mm)", option = "A") + 
+  labs(
+    title = "NY Snowfall Values, 0-100mm (1981-2010)",
+    x = "Snowfall (mm)",
+    y = "Year"
+  )
+  theme(legend.position = "right") 
+
+snowfall_p2
+```
+
+
 ```{r patchwork}
 library(patchwork)
 tmax_tmin_p / snowfall_p
 ```
 
+```{r patchwork2}
+library(patchwork)
+tmax_tmin_p + snowfall_p2
+```
 From the above NY Max and Min Temperatures plot we can see from 1981-2010, the temperature differences in NY were not big. Basically, when the max temperature goes up, the min temperature goes up as well and verse visa. The line represents the relationship between the max temperature and the min temperature. It is roughly linear and most days fluctuates around this line. 
 
 There were very few days the temperature went to extreme, since the most days the max temperatures were below 40 and the min temperatures were above -30 degree celsius.The most frequently appeared maximum temperature is ~25°C and the most frequently appeared minimum temperature is ~15°C.
 
-From the below NY Snowfall Distribution plot we can see the distribution of snowfall values that are greater than 0 and less than 100 separately by year, from 1981-2010. The snowfall remains quite even across the entire period, with a right-skewed distribution or long tail towards upper snowfall amounts. The median snowfall is around 25 mm and stays consistent year to year, give or take a few mm. The upper and lower quartiles are also quite consistent, with the 25th percentile around 15 mm and 75th percentile around 50 mm. There are more outliers showing up in the year of 1998, 2006 and 2010.
+From the below NY Snowfall Distribution boxplot we can see the distribution of snowfall values that are greater than 0 and less than 100 separately by year, from 1981-2010. The snowfall remains quite even across the entire period, with a right-skewed distribution or long tail towards upper snowfall amounts. The median snowfall is around 25 mm and stays consistent year to year, give or take a few mm. The upper and lower quartiles are also quite consistent, with the 25th percentile around 15 mm and 75th percentile around 50 mm. There are more outliers showing up in the year of 1998, 2006 and 2010.
+
+
+From the NY Snowfall Distribution density plot we can see for each year, the distributions are still quite similar to each other, with a right-skewed multimodal distribution with one peak around 15mm and the other around 25mm. There is also a small peak around 50mm. 
+
 
 ### Problem 1
 
